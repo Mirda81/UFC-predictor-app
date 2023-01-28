@@ -3,6 +3,12 @@ from tkinter import ttk
 from PIL import ImageTk, Image
 from img_scraper import download_pic
 import pandas as pd
+from keras.models import load_model
+from predict import prediction
+from form_helper import create_form
+# načtení modelu
+model = load_model('model.h5')
+model.load_weights('my_model_weights.h5')  # to load
 # vytvoření okna
 root = tk.Tk()
 root.title("Fighter Comparison")
@@ -23,8 +29,14 @@ def filter_fighters(*args):
 
 # funkce pro zobrazení obrázku bojovníka
 def show_fighter_image(fighter, number):
-    download_pic(fighter)
-    img = Image.open("f1.PPM")
+    try:
+        download_pic(fighter)
+        img = Image.open("f1.PPM")
+    except:
+        img = Image.open("2.png")
+        inverted_image = Image.new("RGB", img.size, (255, 255, 255))
+        inverted_image.paste(img, (0, 0), img)
+        img = inverted_image
     img = img.resize((250, 250), Image.ANTIALIAS)
     img = ImageTk.PhotoImage(img)
     if number ==1:
@@ -53,16 +65,16 @@ label_f2.place(x=482, y=50, width=288, height=400)
 
 
 # vytvoření rozbalovacího seznamu pro výběr bojovníka 1
-fighter1_label = ttk.Label(root, text="Fighter 1:",background="black",foreground="white")
+#fighter1_label = ttk.Label(root, text="Fighter 1:",background="black",foreground="white")
 fighter1_combo = ttk.Combobox(root, values=fighters)
-fighter1_label.place(x=20,y=20)
-fighter1_combo.place(x=100,y=20, width=100)
+#fighter1_label.place(x=20,y=20)
+fighter1_combo.place(x=100,y=30, width=200)
 
 # vytvoření rozbalovacího seznamu pro výběr bojovníka 2
-fighter2_label = ttk.Label(root, text="Fighter 2:",background="black",foreground="white")
+#fighter2_label = ttk.Label(root, text="Fighter 2:",background="black",foreground="white")
 fighter2_combo = ttk.Combobox(root, values=fighters)
-fighter2_label.place(x=480,y=20)
-fighter2_combo.place(x=560,y=20, width=100)
+#fighter2_label.place(x=480,y=20)
+fighter2_combo.place(x=560,y=30, width=200)
 
 
 # vytvoření Label widgetu pro zobrazení obrázku bojovníka 1
@@ -116,13 +128,17 @@ label_Weight.place(x=365, y=380,width=60,height=25)
 label_Weight= ttk.Label(root, text="   SUB",background="black",foreground="red",font=("Helvetica", 10, "bold"))
 label_Weight.place(x=365, y=410,width=60,height=25)
 
+#predictions
+label_Weight= ttk.Label(root, text="Probibility of win%: ",background="black",foreground="Green",font=("Helvetica", 10, "bold"))
+label_Weight.place(x=30, y=330,width=130,height=25)
+
 
 # napojení callbacku na událost změny výběru v rozbalovacím seznamu
 fighter1_combo.bind("<KeyRelease>", filter_fighters)
 fighter2_combo.bind("<KeyRelease>", filter_fighters)
 fighter1_combo.bind("<<ComboboxSelected>>", lambda event: show_fighter_image(fighter1_combo.get(),1))
-fighter2_combo.bind("<<ComboboxSelected>>", lambda event: show_fighter_image(fighter2_combo.get(),2))
-
+fighter2_combo.bind("<<ComboboxSelected>>", lambda event: show_fighter_image(fighter2_combo.get(),2),add="+")
+fighter2_combo.bind("<<ComboboxSelected>>", lambda event: prediction(fighter1_combo.get(),fighter2_combo.get(),model),add="+")
 
 # zobrazit okno
 root.mainloop()
