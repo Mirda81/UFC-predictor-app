@@ -1,4 +1,3 @@
-import tkinter as tk
 from tkinter import ttk
 from tkinter import *
 import matplotlib.pyplot as plt
@@ -11,25 +10,23 @@ import numpy as np
 import matplotlib
 matplotlib.use("TkAgg")
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
-import odds
+from process_helper import odds
 from math import pi
 from matplotlib import rcParams
 from tkinter import messagebox
-
 
 class FighterComparison(Frame):
 
     def __init__(self,master):
         super().__init__(master)
         self.master = master
-        self.df = pd.read_csv('df_skills.csv')
-        self.df_odds = pd.read_csv('df_odds.csv')
-        self.fighters = self.df['FIGHTER'].tolist()
+        self.df = pd.read_csv('Preprocessing/df_skills.csv')
+        self.df_odds = pd.read_csv('process_helper/df_odds.csv')
         self.create_fighter_frames()
         self.create_fighter_selectors()
         self.create_image_labels()
-        self.model = load_model('model2.h5')
-        self.model.load_weights('my_model_weights2.h5')  # to load
+        self.model = load_model('model/model.h5')
+        self.model.load_weights('model/my_model_weights.h5')  # to load
         self.middle_panel()
         self.create_val_labels()
         self.create_menu()
@@ -96,31 +93,20 @@ class FighterComparison(Frame):
     def create_fighter_selectors(self):
 
         # create dropdown menu for selecting fighter 1
-        #self.fighter1_label = ttk.Label(self, text="Fighter 1:", background="black", foreground="white")
-        self.fighter1_combo = ttk.Combobox(self.master, values=self.fighters,background="red")
-        #self.fighter1_label.place(x=20, y=20)
+
+        self.fighter1_combo = ttk.Combobox(self.master, background="red")
         self.fighter1_combo.place(x=100, y=45, width=130,height=20)
-        self.fighter1_combo.bind("<KeyRelease>", self.filter_fighters)
+
         self.fighter1_combo.bind("<<ComboboxSelected>>", lambda event: self.show_fighter_image(self.fighter1_combo.get(), 1), add="+")
         self.fighter1_combo.bind("<<ComboboxSelected>>",
                             lambda event: self.fill_values(1), add="+")
         # create dropdown menu for selecting fighter 2
 
-        self.fighter2_combo = ttk.Combobox(self.master, values=self.fighters,background="blue")
+        self.fighter2_combo = ttk.Combobox(self.master,background="blue")
         self.fighter2_combo.place(x=560, y=45, width=130,height=20)
-        self.fighter2_combo.bind("<KeyRelease>", self.filter_fighters)
         self.fighter2_combo.bind("<<ComboboxSelected>>", lambda event: self.show_fighter_image(self.fighter2_combo.get(), 2), add="+")
         self.fighter2_combo.bind("<<ComboboxSelected>>",
                             lambda event: self.fill_values(2), add="+")
-
-    def filter_fighters(self, *args):
-        """Function for filtering the list of fighters"""
-        filter_text1 = self.fighter1_combo.get()
-        filter_text2 = self.fighter2_combo.get()
-        filtered_fighters1 = [fighter for fighter in self.fighters if filter_text1.lower() in fighter.lower()]
-        filtered_fighters2 = [fighter for fighter in self.fighters if filter_text2.lower() in fighter.lower()]
-        self.fighter1_combo.config(values=filtered_fighters1)
-        self.fighter2_combo.config(values=filtered_fighters2)
 
     def create_image_labels(self):
         # create Label widget for displaying the image of fighter 1

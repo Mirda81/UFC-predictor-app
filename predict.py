@@ -11,10 +11,10 @@ from keras.models import load_model
 
 
 def prediction(f1, f2,model):
-    df = pd.read_csv('fight_with_stats_precomp.csv')
-    df_fighters = pd.read_csv('fighter_total_stats.csv')
-    df_fighters_details = pd.read_csv('fighter_details.csv', parse_dates=True)
-    df_model = pd.read_csv('df_model.csv', parse_dates=True)
+    df = pd.read_csv('Preprocessing/fight_with_stats_precomp.csv')
+    df_fighters = pd.read_csv('Preprocessing/fighter_total_stats.csv')
+    df_fighters_details = pd.read_csv('Preprocessing/fighter_details.csv', parse_dates=True)
+    df_model = pd.read_csv('model/df_model.csv', parse_dates=True)
 
     today = date.today()
     df_fighters_details['AGE'] = (pd.to_datetime(today) - pd.to_datetime(df_fighters_details['DOB'])).astype('<m8[Y]')

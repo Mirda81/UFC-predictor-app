@@ -5,7 +5,8 @@ from img_scraper import download_pic
 import pandas as pd
 from keras.models import load_model
 from predict import prediction
-from form_helper import create_form
+from tk_form import create_form
+
 # načtení modelu
 model = load_model('model.h5')
 model.load_weights('my_model_weights.h5')  # to load
