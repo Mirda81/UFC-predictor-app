@@ -3,12 +3,14 @@ from tkinter import *
 from Fighter_class import Fighter
 import pandas as pd
 import functions
+import ttkbootstrap as tk
+from ttkbootstrap.constants import *
 
 df_fighter = pd.read_csv('Preprocessing/df_skills.csv')
 
-root = Tk()
+root = tk.Window(themename="cyborg")
 root.title("Fights prediction")
-root.config(bg="black")
+root.config()
 root.resizable(False, False)
 root.geometry("800x750")
 icon = PhotoImage(file="icon.png")

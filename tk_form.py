@@ -14,7 +14,8 @@ from process_helper import odds
 from math import pi
 from matplotlib import rcParams
 from tkinter import messagebox
-
+import ttkbootstrap as tk
+from ttkbootstrap.constants import *
 
 class FighterComparison(Frame):
 
@@ -23,6 +24,7 @@ class FighterComparison(Frame):
         self.master = master
         self.df = pd.read_csv('Preprocessing/df_skills.csv')
         self.df_odds = pd.read_csv('process_helper/df_odds.csv')
+        self.bg_color = "black"
         self.red_corner_clr = "#BF1A2F"
         self.blue_corner_clr = "#22577A"
         self.create_fighter_frames()
@@ -49,26 +51,26 @@ class FighterComparison(Frame):
         label_f2 = ttk.Label(self.master, relief="raised", background=self.blue_corner_clr, borderwidth=5, foreground="red")
         label_f2.place(x=482, y=40, width=288, height=410)
         # frame dole
-        label_dole = ttk.Label(self.master, background="white",relief="sunken", borderwidth=2, foreground="red")
+        label_dole = ttk.Label(self.master, background="black",relief="sunken", borderwidth=2, foreground="red")
         label_dole.place(x=0, y=452, width=800, height=395)
         # label decision
-        self.label_decision_text = ttk.Label(self.master, text="Decision: ", background="black", foreground="yellow",
+        self.label_decision_text = ttk.Label(self.master, text="Decision: ", background=self.bg_color , foreground="yellow",
                                  font=("Helvetica", 12, "bold"))
         self.label_decision_text.place(x=18, y=10, width=75, height=20)
-        self.label_decision = ttk.Label(self.master, text="", background="black", foreground="yellow",
+        self.label_decision = ttk.Label(self.master, text="", background=self.bg_color , foreground="yellow",
                                  font=("Helvetica", 12, "bold"))
         self.label_decision.place(x=100, y=10, width=200, height=20)
 
         # label confidence level
-        self.label_confidence_text = ttk.Label(self.master, text="Confidence level: ", background="black", foreground="yellow",
+        self.label_confidence_text = ttk.Label(self.master, text="Confidence level: ", background=self.bg_color , foreground="yellow",
                                  font=("Helvetica", 12, "bold"))
         self.label_confidence_text.place(x=310, y=10, width=135, height=20)
-        self.label_confidence = ttk.Label(self.master, text="", background="black", foreground="yellow",
+        self.label_confidence = ttk.Label(self.master, text="", background=self.bg_color , foreground="yellow",
                                  font=("Helvetica", 12, "bold"))
         self.label_confidence.place(x=460, y=10, width=70, height=20)
 
         # label confidence reason
-        self.label_reason = ttk.Label(self.master, text="", background="black", foreground="yellow",
+        self.label_reason = ttk.Label(self.master, text="", background=self.bg_color , foreground="yellow",
                                  font=("Helvetica", 12, "bold"))
         self.label_reason.place(x=550, y=10, width=230, height=20)
 
@@ -96,16 +98,16 @@ class FighterComparison(Frame):
             messagebox.showinfo("Update completed", "Odds update has been completed.")
     def create_fighter_selectors(self):
         # create dropdown menu for selecting fighter 1
-        self.fighter1_combo = ttk.Combobox(self.master, background="red")
-        self.fighter1_combo.place(x=100, y=45, width=130,height=20)
+        self.fighter1_combo = ttk.Combobox(self.master)
+        self.fighter1_combo.place(x=100, y=43, width=130,height=24)
 
 
         self.fighter1_combo.bind("<<ComboboxSelected>>",
                             lambda event: self.fill_values(1), add="+")
 
         # create dropdown menu for selecting fighter 2
-        self.fighter2_combo = ttk.Combobox(self.master,background="blue")
-        self.fighter2_combo.place(x=560, y=45, width=130,height=20)
+        self.fighter2_combo = ttk.Combobox(self.master)
+        self.fighter2_combo.place(x=560, y=43, width=130,height=24)
 
         self.fighter2_combo.bind("<<ComboboxSelected>>",
                             lambda event: self.fill_values(2), add="+")
@@ -331,7 +333,7 @@ class FighterComparison(Frame):
                                  font=("Helvetica", 12, "bold"))
         self.label_odds_text2.place(x=500, y=360, width=150, height=25)
 
-        self.label_odds_value2= ttk.Label(self.master, text="",background= self.blue_corner_clr, foreground=self.blue_corner_clr,
+        self.label_odds_value2= ttk.Label(self.master, text="",background= self.blue_corner_clr, foreground="black",
                                  font=("Helvetica", 12, "bold"))
         self.label_odds_value2.place(x=660, y=360, width=100, height=25)
         # bookmakers odds
@@ -422,20 +424,37 @@ class FighterComparison(Frame):
             self.skills_chart(self.fighter1,self.fighter2)
             self.make_decision()
     def probability_chart(self, probability1, probability2):
-        fig, ax = plt.subplots(figsize=(4, 4), subplot_kw={'aspect': 'equal'},facecolor="white")
-        ax.pie(x=(probability1, probability2), colors=["red", "blue"], autopct='%.00f%%',
-               startangle=90,
-               wedgeprops={'linewidth': 2, 'edgecolor': 'k'}, labeldistance=1.1,
-               textprops={'fontsize': 10, 'weight': 'bold'})
-        ax.add_artist(plt.Circle((0, 0), 0.35, fc='white', ec='black', lw=2))
-        ax.annotate("% to win", xy=(0, 0), va="center", ha="center")
-        plt.tight_layout(pad=0.5, w_pad=0.5, h_pad=0.5)
-        ax.set_facecolor('black')
 
-        # vložení grafu do formuláře
-        canvas = FigureCanvasTkAgg(fig, master=self.master)
-        canvas.get_tk_widget().place(x=40, y=455, width=320, height=270)
-        canvas.draw()
+        meter1 = tk.Meter(
+            metersize=175,
+            padding=5,
+            amountused=0,
+            metertype="full",
+            subtext="% to win",
+            interactive=False, bootstyle='success',
+            meterthickness=15, stripethickness = 5,
+        )
+        meter1.place(x=30, y=500)
+
+        meter2 = tk.Meter(
+            metersize=175,
+            padding=5,
+            amountused=0,
+            metertype="full",
+            subtext="% to win",
+            interactive=False, bootstyle='success',
+            meterthickness=15, stripethickness = 5,
+        )
+        meter2.place(x=595, y=500)
+        progres = 0
+        while progres< 30:
+            meter1.configure(amountused=round(progres*probability1/30,2))
+            meter2.configure(amountused=round(progres*probability2/30,2))
+            progres+=2
+            self.update()
+        meter1.configure(amountused=round(probability1,2))
+        meter2.configure(amountused=round(probability2,2))
+        self.update()
 
     def skills_chart(self, fighter1, fighter2):
         # Define the categories and values
@@ -447,26 +466,26 @@ class FighterComparison(Frame):
             self.df['FIGHTER'] == fighter2, ["ground_def_skill", "ground_att_skill", "stand_def_skill",
                                              "stand_att_skill", "stamina"]].values.flatten().tolist()
         # Create the figure
-        fig = plt.figure()
+        fig = plt.figure(facecolor='black')
         ax = fig.add_subplot(111, polar=True, facecolor='yellow')
 
         # Plot the data
         ax.plot(np.linspace(0, 2 * np.pi, len(categories), endpoint=False), values1, '-', linewidth=1, color='red')
         ax.plot(np.linspace(0, 2 * np.pi, len(categories), endpoint=False), values2, '-', linewidth=1, color='blue')
-        ax.fill(np.linspace(0, 2 * np.pi, len(categories), endpoint=False), values1, alpha=0.5, color='red')
-        ax.fill(np.linspace(0, 2 * np.pi, len(categories), endpoint=False), values2, alpha=0.5, color='blue')
+        ax.fill(np.linspace(0, 2 * np.pi, len(categories), endpoint=False), values1, alpha=0.3, color='red')
+        ax.fill(np.linspace(0, 2 * np.pi, len(categories), endpoint=False), values2, alpha=0.3, color='blue')
 
         # Add labels
-        ax.set_thetagrids(np.linspace(0, 360, len(categories), endpoint=False), categories, color='black')
+        ax.set_thetagrids(np.linspace(0, 360, len(categories), endpoint=False), categories, color='red')
         ax.grid(color='black')
         ax.set_theta_offset(-pi / 16)
         plt.ylim(0, 100)
         for spine in ax.spines.values():
-            spine.set_edgecolor('black')
+            spine.set_edgecolor('red')
         ax.set_rlabel_position(45)
         # Show the plot
         canvas_skill = FigureCanvasTkAgg(fig, master=self.master)
-        canvas_skill.get_tk_widget().place(x=420, y=455, width=320, height=270)
+        canvas_skill.get_tk_widget().place(x=210, y=455, width=370, height=270)
         canvas_skill.draw()
     def get_confidence(self):
         f1_fights = int(self.df_f1['Fights'])
