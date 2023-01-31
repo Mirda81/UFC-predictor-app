@@ -17,16 +17,6 @@ root.config(bg="black")
 root.resizable(False, False)
 root.geometry("800x600")
 df = pd.read_csv('fighter_total_stats.csv')
-fighters= df['FIGHTER'].tolist()
-def filter_fighters(*args):
-    """Funkce pro filtrování seznamu bojovníků"""
-    filter_text1 = fighter1_combo.get()
-    filter_text2 = fighter2_combo.get()
-    filtered_fighters1 = [fighter for fighter in fighters if filter_text1.lower() in fighter.lower()]
-    filtered_fighters2 = [fighter for fighter in fighters if filter_text2.lower() in fighter.lower()]
-    fighter1_combo.config(values=filtered_fighters1)
-    fighter2_combo.config(values=filtered_fighters2)
-    print(filter_text1)
 
 # funkce pro zobrazení obrázku bojovníka
 def show_fighter_image(fighter, number):
@@ -66,17 +56,12 @@ label_f2.place(x=482, y=50, width=288, height=400)
 
 
 # vytvoření rozbalovacího seznamu pro výběr bojovníka 1
-#fighter1_label = ttk.Label(root, text="Fighter 1:",background="black",foreground="white")
-fighter1_combo = ttk.Combobox(root, values=fighters)
-#fighter1_label.place(x=20,y=20)
+fighter1_combo = ttk.Combobox(root)
 fighter1_combo.place(x=100,y=30, width=200)
 
 # vytvoření rozbalovacího seznamu pro výběr bojovníka 2
-#fighter2_label = ttk.Label(root, text="Fighter 2:",background="black",foreground="white")
-fighter2_combo = ttk.Combobox(root, values=fighters)
-#fighter2_label.place(x=480,y=20)
+fighter2_combo = ttk.Combobox(root)
 fighter2_combo.place(x=560,y=30, width=200)
-
 
 # vytvoření Label widgetu pro zobrazení obrázku bojovníka 1
 fighter1_image_label = ttk.Label(root,background="black")

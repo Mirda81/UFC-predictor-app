@@ -15,6 +15,7 @@ from math import pi
 from matplotlib import rcParams
 from tkinter import messagebox
 
+
 class FighterComparison(Frame):
 
     def __init__(self,master):
@@ -22,6 +23,8 @@ class FighterComparison(Frame):
         self.master = master
         self.df = pd.read_csv('Preprocessing/df_skills.csv')
         self.df_odds = pd.read_csv('process_helper/df_odds.csv')
+        self.red_corner_clr = "#BF1A2F"
+        self.blue_corner_clr = "#22577A"
         self.create_fighter_frames()
         self.create_fighter_selectors()
         self.create_image_labels()
@@ -30,23 +33,24 @@ class FighterComparison(Frame):
         self.middle_panel()
         self.create_val_labels()
         self.create_menu()
+
     def create_fighter_frames(self):
         # frame for fighter 1
-        label_border1 = ttk.Label(self.master, background="red", foreground="red")
+        label_border1 = ttk.Label(self.master,relief="groove", background= self.red_corner_clr, foreground="red")
         label_border1.place(x=18, y=38, width=292, height=414)
 
-        label_f1 = ttk.Label(self.master, relief="groove", background="red", borderwidth=5, foreground="red")
+        label_f1 = ttk.Label(self.master, relief="raised", background=self.red_corner_clr, borderwidth=5, foreground="red")
         label_f1.place(x=20, y=40, width=288, height=410)
 
         # frame for fighter 2
-        label_border2 = ttk.Label(self.master, background="blue", foreground="blue")
+        label_border2 = ttk.Label(self.master,relief="groove", background=self.blue_corner_clr, foreground="blue")
         label_border2.place(x=480, y=38, width=292, height=414)
 
-        label_f2 = ttk.Label(self.master, relief="groove", background="blue", borderwidth=5, foreground="red")
+        label_f2 = ttk.Label(self.master, relief="raised", background=self.blue_corner_clr, borderwidth=5, foreground="red")
         label_f2.place(x=482, y=40, width=288, height=410)
         # frame dole
         label_dole = ttk.Label(self.master, background="white",relief="sunken", borderwidth=2, foreground="red")
-        label_dole.place(x=0, y=450, width=800, height=395)
+        label_dole.place(x=0, y=452, width=800, height=395)
         # label decision
         self.label_decision_text = ttk.Label(self.master, text="Decision: ", background="black", foreground="yellow",
                                  font=("Helvetica", 12, "bold"))
@@ -91,50 +95,35 @@ class FighterComparison(Frame):
             self.fill_values(2)
             messagebox.showinfo("Update completed", "Odds update has been completed.")
     def create_fighter_selectors(self):
-
         # create dropdown menu for selecting fighter 1
-
         self.fighter1_combo = ttk.Combobox(self.master, background="red")
         self.fighter1_combo.place(x=100, y=45, width=130,height=20)
 
-        self.fighter1_combo.bind("<<ComboboxSelected>>", lambda event: self.show_fighter_image(self.fighter1_combo.get(), 1), add="+")
+
         self.fighter1_combo.bind("<<ComboboxSelected>>",
                             lambda event: self.fill_values(1), add="+")
-        # create dropdown menu for selecting fighter 2
 
+        # create dropdown menu for selecting fighter 2
         self.fighter2_combo = ttk.Combobox(self.master,background="blue")
         self.fighter2_combo.place(x=560, y=45, width=130,height=20)
-        self.fighter2_combo.bind("<<ComboboxSelected>>", lambda event: self.show_fighter_image(self.fighter2_combo.get(), 2), add="+")
+
         self.fighter2_combo.bind("<<ComboboxSelected>>",
                             lambda event: self.fill_values(2), add="+")
 
     def create_image_labels(self):
         # create Label widget for displaying the image of fighter 1
-        self.fighter1_image_label = ttk.Label(self.master, background="white",relief="ridge")
+        self.fighter1_image_label = ttk.Label(self.master, background="white",relief="sunken")
         self.fighter1_image_label.place(x=38, y=70, width=250, height=250)
 
         # create Label widget for displaying the image of fighter 2
-        self.fighter2_image_label = ttk.Label(self.master, background="white",relief="ridge")
+        self.fighter2_image_label = ttk.Label(self.master, background="white",relief="sunken")
         self.fighter2_image_label.place(x=500, y=70, width=250, height=250)
 
 
-    def show_fighter_image(self, fighter, number):
-        try:
-            download_pic(fighter)
-            img = Image.open("f1.PPM")
-        except:
-            img = Image.open("2.png")
-            inverted_image = Image.new("RGB", img.size, (255, 255, 255))
-            inverted_image.paste(img, (0, 0), img)
-            img = inverted_image
-        img = img.resize((250, 250), Image.ANTIALIAS)
-        img = ImageTk.PhotoImage(img)
-        if number ==1:
-            self.fighter1_image_label.config(image=img)
-            self.fighter1_image_label.image = img
-        if number ==2:
-            self.fighter2_image_label.config(image=img)
-            self.fighter2_image_label.image = img
+    def show_fighter_image(self, target, fighter):
+        img = download_pic(fighter)
+        target.config(image=img)
+        target.image = img
 
     def middle_panel(self):
         # středový panel
@@ -295,70 +284,70 @@ class FighterComparison(Frame):
 
     def create_val_labels(self):
         # proba
-        self.label_pred_text1 = ttk.Label(self.master, text="Probability of win: ", background="red", foreground="black",
+        self.label_pred_text1 = ttk.Label(self.master, text="Probability of win: ", background= self.red_corner_clr, foreground="black",
                                  font=("Helvetica", 12, "bold"))
         self.label_pred_text1.place(x=30, y=330, width=160, height=25)
 
-        self.label_pred_value1= ttk.Label(self.master, text="", background="red", foreground="black",
+        self.label_pred_value1= ttk.Label(self.master, text="", background = self.red_corner_clr, foreground="black",
                                  font=("Helvetica", 12, "bold"))
         self.label_pred_value1.place(x=185, y=330, width=100, height=25)
 
-        self.label_pred_text2 = ttk.Label(self.master, text="Probability of win: ", background="blue", foreground="black",
+        self.label_pred_text2 = ttk.Label(self.master, text="Probability of win: ", background=self.blue_corner_clr, foreground="black",
                                      font=("Helvetica", 12, "bold"))
         self.label_pred_text2.place(x=500, y=330, width=160, height=25)
 
-        self.label_pred_value2 = ttk.Label(self.master, text="", background="blue", foreground="black",
+        self.label_pred_value2 = ttk.Label(self.master, text="", background=self.blue_corner_clr, foreground="black",
                                       font=("Helvetica", 12, "bold"))
 
         self.label_pred_value2.place(x=660, y=330, width=100, height=25)
         # f1 odds
         # calculated
-        self.label_odds_text1 = ttk.Label(self.master, text="Calculated odds: ", background="red", foreground="black",
+        self.label_odds_text1 = ttk.Label(self.master, text="Calculated odds: ", background=self.red_corner_clr, foreground="black",
                                  font=("Helvetica", 12, "bold"))
         self.label_odds_text1.place(x=30, y=360, width=140, height=25)
 
-        self.label_odds_value1= ttk.Label(self.master, text="", background="red", foreground="black",
+        self.label_odds_value1= ttk.Label(self.master, text="", background=self.red_corner_clr, foreground="black",
                                  font=("Helvetica", 12, "bold"))
         self.label_odds_value1.place(x=185, y=360, width=100, height=25)
         # bookmaker ods
-        self.label_odds_b_text1 = ttk.Label(self.master, text="Bookmakers odds: ", background="red", foreground="black",
+        self.label_odds_b_text1 = ttk.Label(self.master, text="Bookmakers odds: ", background=self.red_corner_clr, foreground="black",
                                  font=("Helvetica", 12, "bold"))
         self.label_odds_b_text1.place(x=30, y=390, width=150, height=25)
 
-        self.label_odds_b_value1= ttk.Label(self.master, text="", background="red", foreground="black",
+        self.label_odds_b_value1= ttk.Label(self.master, text="", background=self.red_corner_clr, foreground="black",
                                  font=("Helvetica", 12, "bold"))
         self.label_odds_b_value1.place(x=185, y=390, width=100, height=25)
         # best bookmaker
-        self.label_best_b_text1 = ttk.Label(self.master, text="Best bookmaker: ", background="red", foreground="black",
+        self.label_best_b_text1 = ttk.Label(self.master, text="Best bookmaker: ", background=self.red_corner_clr, foreground="black",
                                  font=("Helvetica", 12, "bold"))
         self.label_best_b_text1.place(x=30, y=420, width=150, height=25)
 
-        self.label_best_b_value1= ttk.Label(self.master, text="", background="red", foreground="black",
+        self.label_best_b_value1= ttk.Label(self.master, text="", background=self.red_corner_clr, foreground="black",
                                  font=("Helvetica", 10, "bold"))
         self.label_best_b_value1.place(x=185, y=420, width=100, height=25)
         # f2 odds
         # calculated
-        self.label_odds_text2 = ttk.Label(self.master, text="Calculated odds: ", background="blue", foreground="black",
+        self.label_odds_text2 = ttk.Label(self.master, text="Calculated odds: ", background=self.blue_corner_clr, foreground="black",
                                  font=("Helvetica", 12, "bold"))
         self.label_odds_text2.place(x=500, y=360, width=150, height=25)
 
-        self.label_odds_value2= ttk.Label(self.master, text="", background="blue", foreground="black",
+        self.label_odds_value2= ttk.Label(self.master, text="",background= self.blue_corner_clr, foreground=self.blue_corner_clr,
                                  font=("Helvetica", 12, "bold"))
         self.label_odds_value2.place(x=660, y=360, width=100, height=25)
         # bookmakers odds
-        self.label_odds_b_text2 = ttk.Label(self.master, text="Bookmakers odds: ", background="blue", foreground="black",
+        self.label_odds_b_text2 = ttk.Label(self.master, text="Bookmakers odds: ", background=self.blue_corner_clr, foreground="black",
                                  font=("Helvetica", 12, "bold"))
         self.label_odds_b_text2.place(x=500, y=390, width=150, height=25)
 
-        self.label_odds_b_value2= ttk.Label(self.master, text="", background="blue", foreground="black",
+        self.label_odds_b_value2= ttk.Label(self.master, text="", background=self.blue_corner_clr, foreground="black",
                                  font=("Helvetica", 12, "bold"))
         self.label_odds_b_value2.place(x=660, y=390, width=100, height=25)
         # best bookmaker
-        self.label_best_b_text2 = ttk.Label(self.master, text="Best bookmaker: ", background="blue", foreground="black",
+        self.label_best_b_text2 = ttk.Label(self.master, text="Best bookmaker: ", background=self.blue_corner_clr, foreground="black",
                                  font=("Helvetica", 12, "bold"))
         self.label_best_b_text2.place(x=500, y=420, width=150, height=25)
 
-        self.label_best_b_value2= ttk.Label(self.master, text="", background="blue", foreground="black",
+        self.label_best_b_value2= ttk.Label(self.master, text="", background=self.blue_corner_clr, foreground="black",
                                  font=("Helvetica", 10, "bold"))
         self.label_best_b_value2.place(x=660, y=420, width=100, height=25)
 

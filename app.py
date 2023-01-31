@@ -14,14 +14,12 @@ root.geometry("800x750")
 icon = PhotoImage(file="icon.png")
 root.iconphoto(True, icon)
 app = FighterComparison(root)
-fighter_list = df_fighter['FIGHTER'].tolist()
 
-app.fighter1_combo.config(values=fighter_list)
-app.fighter2_combo.config(values=fighter_list)
-app.fighter1_combo.bind("<KeyRelease>",
-                        lambda event: app.fighter1_combo.config(values=functions.filter_names(fighter_list,app.fighter1_combo.get())))
-app.fighter2_combo.bind("<KeyRelease>",
-                        lambda event: app.fighter2_combo.config(values=functions.filter_names(fighter_list,app.fighter2_combo.get())))
+fighter_list = df_fighter['FIGHTER'].tolist()
+# handle combo lists events
+functions.combos_handler(app,fighter_list)
+
+
 
 root.mainloop()
 
