@@ -358,41 +358,9 @@ class FighterComparison(Frame):
         self.fighter2 = self.fighter2_combo.get()
         if num ==1:
             self.df_f1 = self.df[self.df['FIGHTER'] == self.fighter1]
-
-            self.value_Age1.config(text=int(self.df_f1['AGE']))
-            self.value_Height1.config(text=round(float((self.df_f1['HEIGHT_fighter']*2.54))/100,2))
-            self.value_Weight1.config(text=round(float(self.df_f1['WEIGHT_fighter']*0.4535),1))
-            self.value_Reach1.config(text=round(float((self.df_f1['REACH_fighter']*2.54))/100,2))
-
-            self.label_win_f1.config(text=int(self.df_f1['Win']))
-            self.value_KOTKO1.config(text=int(self.df_f1['Win-striking']))
-            self.value_Dec1.config(text=int(self.df_f1['Win_Decision']))
-            self.value_sub1.config(text=int(self.df_f1['Win-ground']))
-
-            self.value_Losts1.config(text=int(self.df_f1['Lost']))
-            self.value_KO_lost1.config(text=int(self.df_f1['Lost-striking']))
-            self.value_Dec_lost1.config(text=int(self.df_f1['Lost_Decision']))
-            self.label_sub_lost1.config(text=int(self.df_f1['Lost-ground']))
-
             self.fights_f1 = self.df_f1['Fights']
         if num ==2:
             self.df_f2 = self.df[self.df['FIGHTER'] == self.fighter2]
-
-            self.value_Age2.config(text=int(self.df_f2['AGE']))
-            self.value_Height2.config(text=round(float((self.df_f2['HEIGHT_fighter']*2.54))/100,2))
-            self.value_Weight2.config(text=round(float(self.df_f2['WEIGHT_fighter']*0.4535),1))
-            self.value_Reach2.config(text=round(float((self.df_f2['REACH_fighter'] * 2.54)/100), 2))
-
-            self.value_Dec2.config(text=int(self.df_f2['Win_Decision']))
-            self.label_win_f2.config(text=int(self.df_f2['Win']))
-            self.value_KOTKO2.config(text=int(self.df_f2['Win-striking']))
-            self.value_sub2.config(text=int(self.df_f2['Win-ground']))
-
-            self.value_Losts2.config(text=int(self.df_f2['Lost']))
-            self.value_KO_lost2.config(text=int(self.df_f2['Lost-striking']))
-            self.value_Dec_lost2.config(text=int(self.df_f2['Lost_Decision']))
-            self.label_sub_lost2.config(text=int(self.df_f2['Lost-ground']))
-
             self.fights_f2 = self.df_f2['Fights']
 
         if len(self.fighter1) * len(self.fighter2) !=0:
@@ -420,8 +388,9 @@ class FighterComparison(Frame):
                 self.label_best_b_value1.config(text="")
                 self.label_best_b_value2.config(text="")
 
-            self.probability_chart(self.pred1,self.pred2)
+
             self.skills_chart(self.fighter1,self.fighter2)
+            self.probability_chart(self.pred1, self.pred2)
             self.make_decision()
     def probability_chart(self, probability1, probability2):
 
