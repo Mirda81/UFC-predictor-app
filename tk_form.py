@@ -1,11 +1,10 @@
 from tkinter import ttk
 from tkinter import *
 import matplotlib.pyplot as plt
-from PIL import ImageTk, Image
+
 import pandas as pd
 from img_scraper import download_pic
-from keras.models import load_model
-from predict import prediction
+
 import numpy as np
 import matplotlib
 matplotlib.use("TkAgg")
@@ -14,7 +13,6 @@ from process_helper import odds
 from math import pi
 from matplotlib import rcParams
 from tkinter import messagebox
-import ttkbootstrap as tk
 from ttkbootstrap.constants import *
 
 class FighterComparison(Frame):
@@ -30,8 +28,6 @@ class FighterComparison(Frame):
         self.create_fighter_frames()
         self.create_fighter_selectors()
         self.create_image_labels()
-        self.model = load_model('model/model.h5')
-        self.model.load_weights('model/my_model_weights.h5')  # to load
         self.middle_panel()
         self.create_val_labels()
         self.create_menu()
@@ -100,17 +96,8 @@ class FighterComparison(Frame):
         # create dropdown menu for selecting fighter 1
         self.fighter1_combo = ttk.Combobox(self.master)
         self.fighter1_combo.place(x=100, y=43, width=130,height=24)
-
-
-        self.fighter1_combo.bind("<<ComboboxSelected>>",
-                            lambda event: self.fill_values(1), add="+")
-
-        # create dropdown menu for selecting fighter 2
         self.fighter2_combo = ttk.Combobox(self.master)
         self.fighter2_combo.place(x=560, y=43, width=130,height=24)
-
-        self.fighter2_combo.bind("<<ComboboxSelected>>",
-                            lambda event: self.fill_values(2), add="+")
 
     def create_image_labels(self):
         # create Label widget for displaying the image of fighter 1
@@ -353,152 +340,6 @@ class FighterComparison(Frame):
                                  font=("Helvetica", 10, "bold"))
         self.label_best_b_value2.place(x=660, y=420, width=100, height=25)
 
-    def fill_values(self, num):
-        self.fighter1 = self.fighter1_combo.get()
-        self.fighter2 = self.fighter2_combo.get()
-        if num ==1:
-            self.df_f1 = self.df[self.df['FIGHTER'] == self.fighter1]
-            self.fights_f1 = self.df_f1['Fights']
-        if num ==2:
-            self.df_f2 = self.df[self.df['FIGHTER'] == self.fighter2]
-            self.fights_f2 = self.df_f2['Fights']
-
-        if len(self.fighter1) * len(self.fighter2) !=0:
-            self.pred1,self.pred2 = prediction(self.fighter1,self.fighter2, self.model)
-            if self.pred1 > self.pred2:
-                self.label_pred_value2.config(foreground="black")
-                self.label_pred_value1.config(foreground="#00FF00")
-            if self.pred2 > self.pred1:
-                self.label_pred_value1.config(foreground="black")
-                self.label_pred_value2.config(foreground="#00FF00")
-            self.label_pred_value1.config(text=str(self.pred1) + ' %')
-            self.label_pred_value2.config(text=str(self.pred2) +' %')
-            self.label_odds_value1.config(text=str(round(1/(self.pred1/100),2)))
-            self.label_odds_value2.config(text=str(round(1 / (self.pred2/100), 2)))
-            self.odds_b = odds.get_odds(self.fighter1, self.fighter2, self.df_odds)
-
-            if len(self.odds_b) !=0:
-                self.label_odds_b_value1.config(text=str(str(self.odds_b['f1_min']) + " - " +  str(self.odds_b['f1_max'])))
-                self.label_odds_b_value2.config(text=str(str(self.odds_b['f2_min']) + " - " +  str(self.odds_b['f2_max'])))
-                self.label_best_b_value1.config(text=str(str(self.odds_b['bookmaker1'])))
-                self.label_best_b_value2.config(text=str(str(self.odds_b['bookmaker2'])))
-            else:
-                self.label_odds_b_value1.config(text=str("NA"))
-                self.label_odds_b_value2.config(text=str("NA"))
-                self.label_best_b_value1.config(text="")
-                self.label_best_b_value2.config(text="")
 
 
-            self.skills_chart(self.fighter1,self.fighter2)
-            self.probability_chart(self.pred1, self.pred2)
-            self.make_decision()
-    def probability_chart(self, probability1, probability2):
 
-        meter1 = tk.Meter(
-            metersize=175,
-            padding=5,
-            amountused=0,
-            metertype="full",
-            subtext="% to win",
-            interactive=False, bootstyle='success',
-            meterthickness=15, stripethickness = 5,
-        )
-        meter1.place(x=30, y=500)
-
-        meter2 = tk.Meter(
-            metersize=175,
-            padding=5,
-            amountused=0,
-            metertype="full",
-            subtext="% to win",
-            interactive=False, bootstyle='success',
-            meterthickness=15, stripethickness = 5,
-        )
-        meter2.place(x=595, y=500)
-        progres = 0
-        while progres< 30:
-            meter1.configure(amountused=round(progres*probability1/30,2))
-            meter2.configure(amountused=round(progres*probability2/30,2))
-            progres+=2
-            self.update()
-        meter1.configure(amountused=round(probability1,2))
-        meter2.configure(amountused=round(probability2,2))
-        self.update()
-
-    def skills_chart(self, fighter1, fighter2):
-        # Define the categories and values
-        rcParams['xtick.major.pad'] = '5'
-        rcParams['ytick.major.pad'] = '5'
-        categories = ['Ground defense', 'Ground attack', 'Striking defense', 'Striking attack', 'Stamina']
-        values1 = self.df.loc[self.df['FIGHTER']==fighter1,["ground_def_skill","ground_att_skill", "stand_def_skill","stand_att_skill", "stamina"]].values.flatten().tolist()
-        values2 = self.df.loc[
-            self.df['FIGHTER'] == fighter2, ["ground_def_skill", "ground_att_skill", "stand_def_skill",
-                                             "stand_att_skill", "stamina"]].values.flatten().tolist()
-        # Create the figure
-        fig = plt.figure(facecolor='black')
-        ax = fig.add_subplot(111, polar=True, facecolor='yellow')
-
-        # Plot the data
-        ax.plot(np.linspace(0, 2 * np.pi, len(categories), endpoint=False), values1, '-', linewidth=1, color='red')
-        ax.plot(np.linspace(0, 2 * np.pi, len(categories), endpoint=False), values2, '-', linewidth=1, color='blue')
-        ax.fill(np.linspace(0, 2 * np.pi, len(categories), endpoint=False), values1, alpha=0.3, color='red')
-        ax.fill(np.linspace(0, 2 * np.pi, len(categories), endpoint=False), values2, alpha=0.3, color='blue')
-
-        # Add labels
-        ax.set_thetagrids(np.linspace(0, 360, len(categories), endpoint=False), categories, color='red')
-        ax.grid(color='black')
-        ax.set_theta_offset(-pi / 16)
-        plt.ylim(0, 100)
-        for spine in ax.spines.values():
-            spine.set_edgecolor('red')
-        ax.set_rlabel_position(45)
-        # Show the plot
-        canvas_skill = FigureCanvasTkAgg(fig, master=self.master)
-        canvas_skill.get_tk_widget().place(x=210, y=455, width=370, height=270)
-        canvas_skill.draw()
-    def get_confidence(self):
-        f1_fights = int(self.df_f1['Fights'])
-        f2_fights = int(self.df_f2['Fights'])
-
-        f1_weight = float(self.df_f1['WEIGHT_fighter']*0.4535)
-        f2_weight = float(self.df_f2['WEIGHT_fighter']*0.4535)
-
-        if abs(f1_weight-f2_weight) > 10:
-
-            return("Low","Different weight division")
-
-
-        if np.minimum(f1_fights,f2_fights)>=7:
-            return ("High","")
-        elif np.minimum(f1_fights,f2_fights)>=3:
-            return("Medium","")
-        else:
-            return("Low","Not enough data")
-
-    def make_decision(self):
-        confidence = self.get_confidence()
-        if confidence[0]=="Low":
-            if len(self.odds_b)==0:
-                self.label_decision.config(text="No odds found",foreground="red")
-            else:
-                self.label_decision.config(text="NO BET!",foreground="red")
-
-            self.label_confidence.config(text=confidence[0],foreground="red")
-            self.label_reason.config(text=confidence[1],foreground="red")
-            return
-
-        if len(self.odds_b)==0:
-            self.label_decision.config(text="No odds found",foreground="red")
-
-
-        else:
-            if 1/(self.pred1/100) < self.odds_b["f1_max"]:
-                self.label_decision.config(text=str(self.fighter1), foreground="#00FF00")
-            elif 1/(self.pred2/100) < self.odds_b["f2_max"]:
-                self.label_decision.config(text=str(self.fighter2), foreground="#00FF00")
-            else:
-                self.label_decision.config(text="NO BET!", foreground="red")
-
-        barva= "orange" if confidence[0]=="Medium" else "#00FF00"
-        self.label_confidence.config(text=confidence[0],foreground=barva)
-        self.label_reason.config(text=confidence[1],foreground=barva)

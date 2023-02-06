@@ -21,6 +21,6 @@ class Fighter():
         self.Lost_striking =int(self.df['Lost-striking'])
         self.Lost_Decision =int(self.df['Lost_Decision'])
         self.Lost_ground =int(self.df['Lost-ground'])
-
+        self.Fights = int(self.df['Fights'])
+        self.Skills_set = self.df[["ground_def_skill","ground_att_skill", "stand_def_skill","stand_att_skill", "stamina"]].values.flatten().tolist()
 fighter1 = Fighter('Conor McGregor')
-print(fighter1.Lost_ground)

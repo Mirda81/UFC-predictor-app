@@ -1,0 +1,4 @@
+model:
+clustrovat zápasníky dle skillů
+zvážit přidání celkového skillu aby jsme věděli jak silné soupeře někdo porážel
+přidat výhry_ground , clinch, strikimg do precomp datasetu - potom zkusit počítat skill před každýnm zápasem fightera
