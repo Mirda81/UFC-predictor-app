@@ -55,8 +55,8 @@ def prediction(f1, f2,model):
         y_pred = model.predict(new_data)
         return y_pred
 
+
     f1_proba = float(((1 - predict(f1, f2)) + predict(f2, f1)) / 2)
-    print(round(f1_proba * 100, 2), round((1 - f1_proba) * 100, 2))
     return round(f1_proba * 100, 2), round((1 - f1_proba) * 100, 2)
 
 

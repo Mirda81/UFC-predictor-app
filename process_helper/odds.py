@@ -32,7 +32,7 @@ def download_odds():
 
   dict_res = {"fighter1": f1, "fighter2": f2, "odds_f1": f1_odd, "odds_f2": f2_odd, "bookmaker": bookie}
   df = pd.DataFrame(dict_res)
-  df.to_csv('df_odds.csv',index=False)
+  df.to_csv('process_helper/df_odds.csv',index=False)
   return(df)
 
 
