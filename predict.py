@@ -1,4 +1,4 @@
-from sklearn.preprocessing import MinMaxScaler
+from scikit-learn
 import pandas as pd
 import numpy as np
 from numpy import *
